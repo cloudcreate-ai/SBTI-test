@@ -20,11 +20,7 @@ export const ui = {
   wizard: {
     backHome: '返回首页',
     prev: '上一题',
-    next: '下一题',
-    submit: '查看结果',
-    hintNeedChoice: '选一项后继续。',
-    hintAnswered: '可点「下一题」，或返回修改上一题。',
-    hintLast: '最后一题，提交后查看结果。',
+    hintNeedChoice: '选择后将自动进入下一题；可点「上一题」返回修改。',
     /** @param {number} n @param {number} total */
     stepBadge(n, total) {
       return `第 ${n} / ${total} 题`;

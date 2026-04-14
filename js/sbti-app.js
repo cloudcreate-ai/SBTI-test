@@ -27,7 +27,6 @@ const els = {
   wizardProgressText: document.getElementById('wizardProgressText'),
   wizardHost: document.getElementById('wizardQuestionHost'),
   wizardPrev: document.getElementById('wizardPrev'),
-  wizardNext: document.getElementById('wizardNext'),
   wizardHint: document.getElementById('wizardHint'),
   restartBtn: document.getElementById('restartBtn'),
   toTopBtn: document.getElementById('toTopBtn'),
@@ -59,6 +58,23 @@ function getVisible() {
   );
 }
 
+/** 本题答案已确定后：前进到下一题或出结果（饮酒 gate 的答案需先写入 app.answers） */
+function goForwardAfterAnswer(q) {
+  const v2 = getVisible();
+  if (app.stepIndex >= v2.length) app.stepIndex = v2.length - 1;
+  const i = v2.findIndex((x) => x.id === q.id);
+  if (i < 0) {
+    renderStep();
+    return;
+  }
+  if (i === v2.length - 1) {
+    renderResult();
+    return;
+  }
+  app.stepIndex = i + 1;
+  renderStep();
+}
+
 function renderIntroMirror() {
   if (els.mirrorBody) {
     els.mirrorBody.innerHTML = ui.mirrorBlocks
@@ -84,11 +100,7 @@ function renderStep() {
   els.wizardProgressText.textContent = `${done} / ${total}`;
 
   const answered = app.answers[q.id] !== undefined;
-  els.wizardHint.textContent = answered
-    ? total === done && idx === total - 1
-      ? ui.wizard.hintLast
-      : ui.wizard.hintAnswered
-    : ui.wizard.hintNeedChoice;
+  els.wizardHint.textContent = answered ? '' : ui.wizard.hintNeedChoice;
 
   els.wizardHost.innerHTML = `
     <article class="question-card">
@@ -120,26 +132,22 @@ function renderStep() {
       if (q.id === config.drinkGateQuestionId && v !== config.drinkGateInsertValue) {
         delete app.answers[config.drunkTriggerQuestionId];
       }
-      const v2 = getVisible();
-      if (app.stepIndex >= v2.length) app.stepIndex = v2.length - 1;
-      renderStep();
+      goForwardAfterAnswer(q);
+    });
+    // 后退后重点同一选项时 change 不触发，用 click + 快照区分「改选」与「确认原选项」
+    input.addEventListener('click', () => {
+      const v = Number(input.value);
+      const hadBefore = app.answers[q.id];
+      queueMicrotask(() => {
+        if (!input.checked) return;
+        if (hadBefore === undefined) return;
+        if (hadBefore !== v) return;
+        goForwardAfterAnswer(q);
+      });
     });
   });
 
-  const isLast = idx === total - 1;
-  els.wizardNext.textContent = isLast ? ui.wizard.submit : ui.wizard.next;
   els.wizardPrev.disabled = idx === 0;
-  els.wizardNext.disabled = !answered;
-
-  els.wizardNext.onclick = () => {
-    if (!answered) return;
-    if (isLast) {
-      renderResult();
-      return;
-    }
-    app.stepIndex += 1;
-    renderStep();
-  };
   els.wizardPrev.onclick = () => {
     if (idx > 0) {
       app.stepIndex -= 1;
