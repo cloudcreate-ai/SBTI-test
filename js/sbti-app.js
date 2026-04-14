@@ -33,6 +33,14 @@ const els = {
   continueResumeBtn: document.getElementById('continueResumeBtn'),
   introHistory: document.getElementById('introHistory'),
   introHistorySummary: document.getElementById('introHistorySummary'),
+  introLatestWrap: document.getElementById('introLatestWrap'),
+  introLatestPosterBox: document.getElementById('introLatestPosterBox'),
+  introLatestPosterImg: document.getElementById('introLatestPosterImg'),
+  introLatestPosterCaption: document.getElementById('introLatestPosterCaption'),
+  introLatestKicker: document.getElementById('introLatestKicker'),
+  introLatestTypeName: document.getElementById('introLatestTypeName'),
+  introLatestBadge: document.getElementById('introLatestBadge'),
+  introLatestSub: document.getElementById('introLatestSub'),
   viewLatestHistoryBtn: document.getElementById('viewLatestHistoryBtn'),
   introHistoryList: document.getElementById('introHistoryList'),
   clearAllLocalBtn: document.getElementById('clearAllLocalBtn'),
@@ -141,6 +149,28 @@ function applyLoadedProgress(data) {
   return true;
 }
 
+/**
+ * 根据已存进度计算与向导相同的「当前题 / 总题数」（可见题列表，含饮酒 follow-up 逻辑）
+ * @param {NonNullable<ReturnType<typeof loadProgress>>} data
+ * @returns {{ done: number, total: number } | null}
+ */
+function getSavedProgressStep(data) {
+  const shuffled = rebuildQuestionsFromOrder(data.questionOrder);
+  if (shuffled.length < 5) return null;
+  const visible = getVisibleQuestions(
+    shuffled,
+    data.answers,
+    bundle.specialQuestions,
+    config.drinkGateQuestionId,
+    config.drinkGateInsertValue,
+  );
+  if (!visible.length) return null;
+  let idx = visible.findIndex((q) => q.id === data.currentQuestionId);
+  if (idx < 0) idx = 0;
+  idx = Math.min(idx, visible.length - 1);
+  return { done: idx + 1, total: visible.length };
+}
+
 /** 将当前向导状态写入 localStorage（有题序时） */
 function persistProgressFromApp() {
   if (!app.shuffledQuestions.length) return;
@@ -195,7 +225,10 @@ function refreshIntroActions() {
   /* 主操作：有未完成进度时「继续测试」为主按钮（靠前且 primary） */
   if (prog) {
     els.continueResumeBtn.hidden = false;
-    els.continueResumeBtn.textContent = ui.intro.resumeTest;
+    const step = getSavedProgressStep(prog);
+    els.continueResumeBtn.textContent = step
+      ? ui.intro.resumeTestWithProgress(step.done, step.total)
+      : ui.intro.resumeTest;
     els.continueResumeBtn.className = 'btn-primary';
     els.startBtn.className = 'btn-secondary';
   } else {
@@ -206,14 +239,23 @@ function refreshIntroActions() {
 
   if (hist.length === 0) {
     els.introHistory.hidden = true;
-    els.viewLatestHistoryBtn.hidden = true;
+    els.introLatestWrap.hidden = true;
   } else {
     els.introHistory.hidden = false;
     els.introHistory.open = true;
     els.introHistorySummary.textContent = ui.intro.historySummary;
-    els.viewLatestHistoryBtn.hidden = false;
-    const latest = hist[0];
-    els.viewLatestHistoryBtn.textContent = latest.typeCn || latest.typeCode || '—';
+    els.introLatestWrap.hidden = false;
+    const latestResult = computeResult(hist[0].answers, bundle);
+    applyResultHero(latestResult, {
+      kicker: els.introLatestKicker,
+      typeName: els.introLatestTypeName,
+      badge: els.introLatestBadge,
+      sub: els.introLatestSub,
+      caption: els.introLatestPosterCaption,
+      posterBox: els.introLatestPosterBox,
+      posterImg: els.introLatestPosterImg,
+    });
+    els.viewLatestHistoryBtn.textContent = ui.intro.viewFullResult;
     els.viewLatestHistoryBtn.title = ui.intro.viewLatestResultTitle;
     els.introHistoryList.innerHTML = hist
       .map(
@@ -339,6 +381,30 @@ function startTest(resume = false) {
   showScreen('wizard');
 }
 
+/**
+ * 人格海报 + 类型摘要（结果页与首页最近一条共用）
+ * @param {ReturnType<typeof computeResult>} result
+ * @param {{ kicker: HTMLElement, typeName: HTMLElement, badge: HTMLElement, sub: HTMLElement, caption: HTMLElement, posterBox: HTMLElement, posterImg: HTMLImageElement }} dom
+ */
+function applyResultHero(result, dom) {
+  const type = result.finalType;
+  dom.kicker.textContent = result.modeKicker;
+  dom.typeName.textContent = `${type.code}（${type.cn}）`;
+  dom.badge.textContent = result.badge;
+  dom.sub.textContent = result.sub;
+  dom.caption.textContent = type.intro;
+  const imageSrc = bundle.typeImages[type.code];
+  if (imageSrc) {
+    dom.posterImg.src = imageSrc;
+    dom.posterImg.alt = `${type.code}（${type.cn}）`;
+    dom.posterBox.classList.remove('no-image');
+  } else {
+    dom.posterImg.removeAttribute('src');
+    dom.posterImg.alt = '';
+    dom.posterBox.classList.add('no-image');
+  }
+}
+
 function renderDimList(result) {
   const dimList = document.getElementById('dimList');
   dimList.innerHTML = bundle.dimensionOrder
@@ -370,28 +436,19 @@ function renderResult(options = {}) {
     clearProgress();
   }
 
-  document.getElementById('resultModeKicker').textContent = result.modeKicker;
-  document.getElementById('resultTypeName').textContent = `${type.code}（${type.cn}）`;
-  document.getElementById('matchBadge').textContent = result.badge;
-  document.getElementById('resultTypeSub').textContent = result.sub;
+  applyResultHero(result, {
+    kicker: document.getElementById('resultModeKicker'),
+    typeName: document.getElementById('resultTypeName'),
+    badge: document.getElementById('matchBadge'),
+    sub: document.getElementById('resultTypeSub'),
+    caption: document.getElementById('posterCaption'),
+    posterBox: document.getElementById('posterBox'),
+    posterImg: document.getElementById('posterImage'),
+  });
   document.getElementById('resultDesc').textContent = type.desc;
-  document.getElementById('posterCaption').textContent = type.intro;
   document.getElementById('funNote').textContent = result.special
     ? ui.compute.funNoteSpecial
     : ui.compute.funNoteDefault;
-
-  const posterBox = document.getElementById('posterBox');
-  const posterImage = document.getElementById('posterImage');
-  const imageSrc = bundle.typeImages[type.code];
-  if (imageSrc) {
-    posterImage.src = imageSrc;
-    posterImage.alt = `${type.code}（${type.cn}）`;
-    posterBox.classList.remove('no-image');
-  } else {
-    posterImage.removeAttribute('src');
-    posterImage.alt = '';
-    posterBox.classList.add('no-image');
-  }
 
   renderDimList(result);
   showScreen('result');
@@ -415,7 +472,16 @@ function applyStaticLabels() {
 }
 
 function goIntro() {
-  persistProgressFromApp();
+  /* 结果页返回：测验已结束，勿把向导状态再写入「未完成进度」，否则会误显示「继续测试」 */
+  if (screens.result.classList.contains('active')) {
+    clearProgress();
+    app.shuffledQuestions = [];
+    app.answers = {};
+    app.stepIndex = 0;
+    clearAdvanceTimer();
+  } else {
+    persistProgressFromApp();
+  }
   showScreen('intro');
   refreshIntroActions();
 }
@@ -447,7 +513,7 @@ refreshIntroActions();
 
 window.addEventListener('pagehide', () => {
   try {
-    persistProgressFromApp();
+    if (!screens.result.classList.contains('active')) persistProgressFromApp();
   } catch {
     /* ignore */
   }

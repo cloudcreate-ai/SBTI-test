@@ -87,23 +87,29 @@
       padding: 14px 4px 12px;
     }
     .intro-history summary::-webkit-details-marker { display: none; }
-    /* 历史区内「查看最近一次」：可点但不抢主按钮风头 */
-    /* 最近一次：按钮文案为人格名称 */
+    /* 历史区内：最近一次人格卡片（布局同结果页 result-top） */
+    .intro-latest-wrap { margin-bottom: 12px; }
+    .intro-latest-wrap .poster-image { max-height: 240px; }
+    .intro-latest-wrap .intro-history-view-btn {
+      margin-top: 12px;
+      margin-bottom: 0;
+    }
+    /* 完整结果入口，低调次要样式 */
     .intro-history-view-btn {
       width: 100%;
-      margin-bottom: 12px;
       background: var(--panel);
-      color: var(--accent-strong);
+      color: var(--muted);
       border: 1px solid var(--line);
       padding: 10px 14px;
       border-radius: 12px;
-      font-size: 0.95rem;
-      font-weight: 700;
+      font-size: 0.875rem;
+      font-weight: 600;
       min-height: 44px;
       box-shadow: none;
       text-align: center;
     }
     .intro-history-view-btn:hover {
+      color: var(--accent-strong);
       border-color: #c5d8c9;
       background: #fafcfb;
     }
@@ -552,9 +558,23 @@
         </div>
         <details class="intro-history" id="introHistory" hidden>
           <summary id="introHistorySummary">历次结果</summary>
-          <button type="button" id="viewLatestHistoryBtn" class="intro-history-view-btn" hidden title="">
-            —
-          </button>
+          <div id="introLatestWrap" class="intro-latest-wrap" hidden>
+            <div class="result-top">
+              <div class="poster-box" id="introLatestPosterBox">
+                <img id="introLatestPosterImg" class="poster-image" alt="" />
+                <div id="introLatestPosterCaption" class="poster-caption"></div>
+              </div>
+              <div class="type-box">
+                <div class="type-kicker" id="introLatestKicker"></div>
+                <div class="type-name" id="introLatestTypeName"></div>
+                <div class="match" id="introLatestBadge"></div>
+                <div class="type-subname" id="introLatestSub"></div>
+              </div>
+            </div>
+            <button type="button" id="viewLatestHistoryBtn" class="intro-history-view-btn" title="">
+              查看完整结果
+            </button>
+          </div>
           <ul id="introHistoryList" class="intro-history-list"></ul>
         </details>
         <button type="button" id="clearAllLocalBtn" class="intro-clear-all-btn" hidden>
@@ -613,7 +633,7 @@
           <div id="authorContent"></div>
         </details>
         <div class="result-actions">
-          <button type="button" id="restartBtn" class="btn-secondary">重新测试</button>
+          <button type="button" id="restartBtn" class="btn-secondary">再测一次</button>
           <button type="button" id="toTopBtn" class="btn-primary">回到首页</button>
         </div>
       </div>

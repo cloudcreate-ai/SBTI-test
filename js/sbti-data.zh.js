@@ -13,10 +13,15 @@ export const ui = {
   intro: {
     title: "MBTI已经过时，SBTI来了。",
     start: '开始测试',
-    retest: '重新测试',
+    retest: '再测一次',
     resumeTest: '继续测试',
-    /** 首页最近一次结果按钮的 title（文案为人格名称） */
-    viewLatestResultTitle: '点击查看该次完整结果',
+    /** @param {number} current 当前题序号（1-based，与向导一致） @param {number} total */
+    resumeTestWithProgress(current, total) {
+      return `继续测试（${current} / ${total}）`;
+    },
+    /** 首页最近一条卡片下方按钮 */
+    viewFullResult: '查看完整结果',
+    viewLatestResultTitle: '进入与测验结束时相同的结果页',
     /** 历史列表每行右侧 */
     historyRowView: '查看',
     historySummary: '历次结果（最多保留 3 条）',
@@ -48,7 +53,7 @@ export const ui = {
     dimTitle: '十五维度评分',
     noteTitle: '友情提示',
     authorSummary: '作者的话',
-    restart: '重新测试',
+    restart: '再测一次',
     toIntro: '回到首页',
     posterAlt: '人格结果图',
   },
