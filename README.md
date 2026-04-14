@@ -1,8 +1,12 @@
-# SBTI 测试（镜像）
+# SBTI 测试 V2
 
-图片和html已拆分
+图片与 HTML 已拆分；测验为移动端向导式单题流程，题库与计分逻辑在 `js/` 中，便于后续多语言。
 
-注意建立这个repo只是因为网页自身就是全部源码，**原作者并未声明license**所以本repo也不包含license，一切行为请自行斟酌，不要给原作者添麻烦
+**本地运行：** `npm install` 后执行 `npm start`，浏览器打开 http://localhost:3000
 
-地址：https://sbti.unun.dev  
+**备份：** 单文件旧版见 `backup/index-monolithic.html`。
+
+注意建立这个 repo 只是因为网页自身就是全部源码，**原作者并未声明 license**，所以本 repo 也不包含 license，一切行为请自行斟酌，不要给原作者添麻烦。
+
+镜像地址：https://sbti.unun.dev  
 原作者：B站@蛆肉儿串儿

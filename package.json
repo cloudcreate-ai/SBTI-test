@@ -1,0 +1,16 @@
+{
+  "name": "sbti-v2",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "SBTI 人格测试静态站点（ES Module）",
+  "scripts": {
+    "start": "serve . -l 3000 --no-request-logging",
+    "dev": "npm run start",
+    "preview": "npm run start",
+    "serve": "npm run start"
+  },
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}
