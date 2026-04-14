@@ -13,6 +13,13 @@ export const ui = {
   intro: {
     title: "MBTI已经过时，SBTI来了。",
     start: '开始测试',
+    retest: '重新测试',
+    viewLastResult: '查看结果',
+    historySummary: '历次结果（最多保留 3 条）',
+    /** @param {string} dateShort @param {string} typeCn */
+    historyItemLine(dateShort, typeCn) {
+      return `${dateShort} · ${typeCn}`;
+    },
     authorLine: '原作者：B站@蛆肉儿串儿',
     authorTitle: '作者出于某种原因改名了，为避免打扰到原作者，现已删除链接',
     mirrorSummary: '关于本镜像',

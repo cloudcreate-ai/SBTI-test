@@ -58,6 +58,51 @@
       letter-spacing: -0.02em;
       margin: 0 0 20px;
     }
+    .intro-actions-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .intro-actions-row .btn-primary,
+    .intro-actions-row .btn-secondary {
+      flex: 1;
+      min-width: 132px;
+      max-width: 100%;
+    }
+    .intro-history {
+      margin-top: 14px;
+      text-align: left;
+    }
+    .intro-history summary {
+      cursor: pointer;
+      font-size: 0.8rem;
+      color: var(--muted);
+      list-style: none;
+    }
+    .intro-history summary::-webkit-details-marker { display: none; }
+    .intro-history-list {
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .intro-history-list li { margin-top: 8px; }
+    .history-item-btn {
+      width: 100%;
+      text-align: left;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: var(--soft);
+      font: inherit;
+      font-size: 0.85rem;
+      color: var(--text);
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .history-item-btn:active {
+      opacity: 0.92;
+    }
     .author-note {
       margin-top: 1.5rem;
       font-size: 0.9rem;
@@ -396,7 +441,14 @@
     <section id="intro" class="screen active">
       <div class="hero card">
         <h1 id="introTitle">SBTI</h1>
-        <button type="button" id="startBtn" class="btn-primary">开始测试</button>
+        <div class="intro-actions-row" id="introActionsRow">
+          <button type="button" id="viewLastResultBtn" class="btn-secondary" hidden>查看结果</button>
+          <button type="button" id="startBtn" class="btn-primary">开始测试</button>
+        </div>
+        <details class="intro-history" id="introHistory" hidden>
+          <summary id="introHistorySummary">历次结果</summary>
+          <ul id="introHistoryList" class="intro-history-list"></ul>
+        </details>
         <div class="author-note">
           <span id="authorLine" title=""></span>
         </div>

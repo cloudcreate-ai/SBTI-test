@@ -9,6 +9,7 @@ import {
   getVisibleQuestions,
   computeResult,
 } from './sbti-engine.js';
+import { loadHistory, saveHistoryEntry } from './sbti-storage.js';
 
 /** @type {typeof zh} */
 const bundle = zh;
@@ -22,6 +23,10 @@ const screens = {
 
 const els = {
   startBtn: document.getElementById('startBtn'),
+  viewLastResultBtn: document.getElementById('viewLastResultBtn'),
+  introHistory: document.getElementById('introHistory'),
+  introHistorySummary: document.getElementById('introHistorySummary'),
+  introHistoryList: document.getElementById('introHistoryList'),
   wizardBackHome: document.getElementById('wizardBackHome'),
   wizardProgressBar: document.getElementById('wizardProgressBar'),
   wizardProgressText: document.getElementById('wizardProgressText'),
@@ -68,11 +73,55 @@ function goForwardAfterAnswer(q) {
     return;
   }
   if (i === v2.length - 1) {
-    renderResult();
+    renderResult({ persist: true });
     return;
   }
   app.stepIndex = i + 1;
   renderStep();
+}
+
+/** @param {{ savedAt: string, typeCn: string }} e */
+function formatHistoryEntryLine(e) {
+  const d = new Date(e.savedAt);
+  const dateShort = d.toLocaleString('zh-CN', {
+    month: 'numeric',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+  return ui.intro.historyItemLine(dateShort, e.typeCn || e.typeCode || '—');
+}
+
+function refreshIntroActions() {
+  const hist = loadHistory();
+  if (hist.length === 0) {
+    els.viewLastResultBtn.hidden = true;
+    els.introHistory.hidden = true;
+    els.startBtn.textContent = ui.intro.start;
+    return;
+  }
+  els.viewLastResultBtn.hidden = false;
+  els.introHistory.hidden = false;
+  els.viewLastResultBtn.textContent = ui.intro.viewLastResult;
+  els.introHistorySummary.textContent = ui.intro.historySummary;
+  els.startBtn.textContent = ui.intro.retest;
+
+  els.introHistoryList.innerHTML = hist
+    .map(
+      (e, i) =>
+        `<li><button type="button" class="history-item-btn" data-history-index="${i}">${formatHistoryEntryLine(e)}</button></li>`,
+    )
+    .join('');
+
+  els.introHistoryList.querySelectorAll('[data-history-index]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const i = Number(btn.getAttribute('data-history-index'));
+      const h = loadHistory();
+      if (!h[i]) return;
+      app.answers = { ...h[i].answers };
+      renderResult({ persist: false });
+    });
+  });
 }
 
 function renderIntroMirror() {
@@ -182,9 +231,17 @@ function renderDimList(result) {
     .join('');
 }
 
-function renderResult() {
+/**
+ * @param {{ persist?: boolean }} [options] persist 为 true 时表示刚做完测验，写入本地历史
+ */
+function renderResult(options = {}) {
+  const { persist = false } = options;
   const result = computeResult(app.answers, bundle);
   const type = result.finalType;
+
+  if (persist) {
+    saveHistoryEntry(app.answers, { typeCode: type.code, typeCn: type.cn });
+  }
 
   document.getElementById('resultModeKicker').textContent = result.modeKicker;
   document.getElementById('resultTypeName').textContent = `${type.code}（${type.cn}）`;
@@ -215,7 +272,6 @@ function renderResult() {
 
 function applyStaticLabels() {
   document.getElementById('introTitle').textContent = ui.intro.title;
-  document.getElementById('startBtn').textContent = ui.intro.start;
   const al = document.getElementById('authorLine');
   al.textContent = ui.intro.authorLine;
   al.title = ui.intro.authorTitle;
@@ -230,13 +286,25 @@ function applyStaticLabels() {
   els.toTopBtn.textContent = ui.result.toIntro;
 }
 
+function goIntro() {
+  showScreen('intro');
+  refreshIntroActions();
+}
+
 els.startBtn.addEventListener('click', startTest);
-els.wizardBackHome.addEventListener('click', () => showScreen('intro'));
+els.viewLastResultBtn.addEventListener('click', () => {
+  const hist = loadHistory();
+  if (!hist.length) return;
+  app.answers = { ...hist[0].answers };
+  renderResult({ persist: false });
+});
+els.wizardBackHome.addEventListener('click', goIntro);
 els.restartBtn.addEventListener('click', startTest);
-els.toTopBtn.addEventListener('click', () => showScreen('intro'));
+els.toTopBtn.addEventListener('click', goIntro);
 
 applyStaticLabels();
 renderIntroMirror();
+refreshIntroActions();
 
 /**供 index内联脚本检测模块是否已加载 */
 window.__sbtiAppLoaded = true;
