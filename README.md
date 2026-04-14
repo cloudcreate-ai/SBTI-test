@@ -2,7 +2,7 @@
 
 图片与 HTML 已拆分；测验为移动端向导式单题流程，题库与计分逻辑在 `js/` 中，便于后续多语言。
 
-**本地运行：** `npm install` 后执行 `npm start`，浏览器打开 http://localhost:3000
+**本地运行：** `npm install` 后执行 `npm start`，浏览器打开 [http://localhost:3000](http://localhost:3000)
 
 **备份：** 单文件旧版见 `backup/index-monolithic.html`。
 

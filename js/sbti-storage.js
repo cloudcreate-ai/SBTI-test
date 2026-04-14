@@ -85,3 +85,17 @@ export function clearProgress() {
     /* ignore */
   }
 }
+
+export function clearHistory() {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
+/** 清空结果历史与未完成进度（本测验相关 localStorage） */
+export function clearAllLocalData() {
+  clearHistory();
+  clearProgress();
+}

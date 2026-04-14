@@ -145,35 +145,41 @@
     .history-item-view-btn:active {
       opacity: 0.92;
     }
+    /* 历史区块下方：低调红色描边，清除本机数据 */
+    .intro-clear-all-btn {
+      display: block;
+      width: 100%;
+      margin-top: 12px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(180, 55, 50, 0.38);
+      background: #fff;
+      color: #9e2a2a;
+      font: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      box-shadow: none;
+      touch-action: manipulation;
+    }
+    .intro-clear-all-btn:hover {
+      background: #fff8f7;
+      border-color: rgba(180, 55, 50, 0.5);
+    }
+    .intro-clear-all-btn:active {
+      opacity: 0.92;
+    }
+    .intro-privacy-note {
+      margin: 10px 0 0;
+      font-size: 0.78rem;
+      line-height: 1.55;
+      color: var(--muted);
+      text-align: center;
+    }
     .author-note {
       margin-top: 1.5rem;
       font-size: 0.9rem;
       color: var(--muted);
       line-height: 1.6;
-    }
-    .mirror {
-      margin-top: 1.25rem;
-      text-align: left;
-    }
-    .mirror summary {
-      cursor: pointer;
-      font-size: 0.75rem;
-      color: var(--muted);
-      list-style: none;
-    }
-    .mirror summary::-webkit-details-marker { display: none; }
-    .mirror-body {
-      color: var(--muted);
-      font-size: 0.75rem;
-      line-height: 1.65;
-      padding-top: 0.5rem;
-    }
-    .mirror-p { margin: 0.5rem 0; }
-    .mirror-footer {
-      margin: 1rem 0.25rem 0;
-      font-size: 0.65rem;
-      color: rgba(128, 128, 128, 0.45);
-      line-height: 1.55;
     }
 
     button {
@@ -551,14 +557,13 @@
           </button>
           <ul id="introHistoryList" class="intro-history-list"></ul>
         </details>
+        <button type="button" id="clearAllLocalBtn" class="intro-clear-all-btn" hidden>
+          清除所有记录
+        </button>
+        <p class="intro-privacy-note" id="introPrivacyNote"></p>
         <div class="author-note">
           <span id="authorLine" title=""></span>
         </div>
-        <details class="mirror">
-          <summary id="mirrorSummary">关于本镜像</summary>
-          <div class="mirror-body" id="mirrorBody"></div>
-          <div class="mirror-footer" id="mirrorFooter"></div>
-        </details>
       </div>
     </section>
 

@@ -15,6 +15,7 @@ import {
   saveProgress,
   loadProgress,
   clearProgress,
+  clearAllLocalData,
 } from './sbti-storage.js';
 
 /** @type {typeof zh} */
@@ -34,6 +35,7 @@ const els = {
   introHistorySummary: document.getElementById('introHistorySummary'),
   viewLatestHistoryBtn: document.getElementById('viewLatestHistoryBtn'),
   introHistoryList: document.getElementById('introHistoryList'),
+  clearAllLocalBtn: document.getElementById('clearAllLocalBtn'),
   wizardBackHome: document.getElementById('wizardBackHome'),
   wizardProgressBar: document.getElementById('wizardProgressBar'),
   wizardProgressText: document.getElementById('wizardProgressText'),
@@ -42,8 +44,6 @@ const els = {
   wizardHint: document.getElementById('wizardHint'),
   restartBtn: document.getElementById('restartBtn'),
   toTopBtn: document.getElementById('toTopBtn'),
-  mirrorBody: document.getElementById('mirrorBody'),
-  mirrorFooter: document.getElementById('mirrorFooter'),
   authorContent: document.getElementById('authorContent'),
 };
 
@@ -188,6 +188,9 @@ function formatHistoryEntryLine(e) {
 function refreshIntroActions() {
   const hist = loadHistory();
   const prog = loadProgress();
+  const hasLocalData = hist.length > 0 || !!prog;
+  els.clearAllLocalBtn.hidden = !hasLocalData;
+  els.clearAllLocalBtn.textContent = ui.intro.clearAllLocal;
 
   /* 主操作：有未完成进度时「继续测试」为主按钮（靠前且 primary） */
   if (prog) {
@@ -232,13 +235,8 @@ function refreshIntroActions() {
   }
 }
 
-function renderIntroMirror() {
-  if (els.mirrorBody) {
-    els.mirrorBody.innerHTML = ui.mirrorBlocks
-      .map((html) => `<div class="mirror-p">${html}</div>`)
-      .join('');
-  }
-  if (els.mirrorFooter) els.mirrorFooter.textContent = ui.mirrorFooter;
+/** 结果页「作者的话」折叠内容 */
+function renderResultAuthorNotes() {
   if (els.authorContent) {
     els.authorContent.innerHTML = ui.authorNotes.map((t) => `<p>${t}</p>`).join('');
   }
@@ -404,7 +402,8 @@ function applyStaticLabels() {
   const al = document.getElementById('authorLine');
   al.textContent = ui.intro.authorLine;
   al.title = ui.intro.authorTitle;
-  document.getElementById('mirrorSummary').textContent = ui.intro.mirrorSummary;
+  const privacy = document.getElementById('introPrivacyNote');
+  if (privacy) privacy.textContent = ui.intro.localDataPrivacy;
   els.wizardBackHome.textContent = `← ${ui.wizard.backHome}`;
   els.wizardPrev.textContent = ui.wizard.prev;
   document.getElementById('analysisTitle').textContent = ui.result.analysisTitle;
@@ -423,6 +422,15 @@ function goIntro() {
 
 els.startBtn.addEventListener('click', () => startTest(false));
 els.continueResumeBtn.addEventListener('click', () => startTest(true));
+els.clearAllLocalBtn.addEventListener('click', () => {
+  if (!window.confirm(ui.intro.clearAllLocalConfirm)) return;
+  clearAllLocalData();
+  app.shuffledQuestions = [];
+  app.answers = {};
+  app.stepIndex = 0;
+  clearAdvanceTimer();
+  refreshIntroActions();
+});
 els.viewLatestHistoryBtn.addEventListener('click', () => {
   const hist = loadHistory();
   if (!hist.length) return;
@@ -434,7 +442,7 @@ els.restartBtn.addEventListener('click', () => startTest(false));
 els.toTopBtn.addEventListener('click', goIntro);
 
 applyStaticLabels();
-renderIntroMirror();
+renderResultAuthorNotes();
 refreshIntroActions();
 
 window.addEventListener('pagehide', () => {
