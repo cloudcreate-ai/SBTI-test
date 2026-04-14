@@ -254,6 +254,9 @@ function refreshIntroActions() {
       caption: els.introLatestPosterCaption,
       posterBox: els.introLatestPosterBox,
       posterImg: els.introLatestPosterImg,
+      posterTypeLead: document.getElementById('introPosterTypeLead'),
+      posterTypeDisplayName: document.getElementById('introPosterDisplayName'),
+      posterTypeCodeLabel: document.getElementById('introPosterCodeLabel'),
     });
     els.viewLatestHistoryBtn.textContent = ui.intro.viewFullResult;
     els.viewLatestHistoryBtn.title = ui.intro.viewLatestResultTitle;
@@ -382,20 +385,45 @@ function startTest(resume = false) {
 }
 
 /**
+ * 海报区文案与手裁图路径（多语言时在 typePosters 中维护 banner）
+ * @param {{ code: string, cn: string }} type
+ */
+function resolveTypePoster(type) {
+  const row = bundle.typePosters[type.code];
+  const lib = bundle.typeLibrary[type.code];
+  const b = row?.banner ?? {};
+  return {
+    image: row?.image ?? '',
+    leadIn: b.leadIn ?? ui.result.posterTypeLeadIn,
+    displayName: b.displayName ?? lib?.cn ?? type.cn,
+    codeLabel: b.codeLabel ?? lib?.code ?? type.code,
+  };
+}
+
+/**
  * 人格海报 + 类型摘要（结果页与首页最近一条共用）
  * @param {ReturnType<typeof computeResult>} result
- * @param {{ kicker: HTMLElement, typeName: HTMLElement, badge: HTMLElement, sub: HTMLElement, caption: HTMLElement, posterBox: HTMLElement, posterImg: HTMLImageElement }} dom
+ * @param {{
+ *   kicker: HTMLElement, typeName: HTMLElement, badge: HTMLElement, sub: HTMLElement,
+ *   caption: HTMLElement, posterBox: HTMLElement, posterImg: HTMLImageElement,
+ *   posterTypeLead?: HTMLElement | null, posterTypeDisplayName?: HTMLElement | null, posterTypeCodeLabel?: HTMLElement | null
+ * }} dom
  */
 function applyResultHero(result, dom) {
   const type = result.finalType;
+  const poster = resolveTypePoster(type);
   dom.kicker.textContent = result.modeKicker;
   dom.typeName.textContent = `${type.code}（${type.cn}）`;
   dom.badge.textContent = result.badge;
   dom.sub.textContent = result.sub;
   dom.caption.textContent = type.intro;
-  const imageSrc = bundle.typeImages[type.code];
-  if (imageSrc) {
-    dom.posterImg.src = imageSrc;
+  if (dom.posterTypeLead && dom.posterTypeDisplayName && dom.posterTypeCodeLabel) {
+    dom.posterTypeLead.textContent = poster.leadIn;
+    dom.posterTypeDisplayName.textContent = poster.displayName;
+    dom.posterTypeCodeLabel.textContent = poster.codeLabel;
+  }
+  if (poster.image) {
+    dom.posterImg.src = poster.image;
     dom.posterImg.alt = `${type.code}（${type.cn}）`;
     dom.posterBox.classList.remove('no-image');
   } else {
@@ -444,6 +472,9 @@ function renderResult(options = {}) {
     caption: document.getElementById('posterCaption'),
     posterBox: document.getElementById('posterBox'),
     posterImg: document.getElementById('posterImage'),
+    posterTypeLead: document.getElementById('posterTypeLead'),
+    posterTypeDisplayName: document.getElementById('posterTypeDisplayName'),
+    posterTypeCodeLabel: document.getElementById('posterTypeCodeLabel'),
   });
   document.getElementById('resultDesc').textContent = type.desc;
   document.getElementById('funNote').textContent = result.special

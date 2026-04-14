@@ -49,6 +49,8 @@ export const ui = {
     optionsAria: '本题选项',
   },
   result: {
+    /** 海报顶部引导语；各人格可在 typePosters.banner.leadIn 单独覆盖 */
+    posterTypeLeadIn: '你的人格类型是：',
     analysisTitle: '该人格的简单解读',
     dimTitle: '十五维度评分',
     noteTitle: '友情提示',
@@ -563,34 +565,122 @@ export const typeLibrary = {
     "desc": "您为什么走路摇摇晃晃？您为什么总是情绪高涨？您为什么看东西是重影的？因为您体内流淌的不是血液，是美味的五粮液！是国窖1573！是江小白！是陕西五粮液！哦，美味的白酒，每一滴都在燃烧，都在沸腾。您是否已经习惯了将白酒灌入保温杯，当作白开水一饮而下？多么伟大的白酒！它让您在饭桌上谈笑风生，在厕所里抱着马桶忏悔人生；它让您觉得自己是夜场诗人，是宇宙中心那团不灭的火，直到第二天上午十点，您的头像裂开的核桃，嘴角挂着食物残渣，灵魂缩在角落里。您终于明白，昨晚那个高谈阔论、拍桌怒吼的人，已经成为了一个酒鬼。"
   }
 };
-export const typeImages = {
-  "IMSB": "./image/IMSB.png",
-  "BOSS": "./image/BOSS.png",
-  "MUM": "./image/MUM.png",
-  "FAKE": "./image/FAKE.png",
-  "Dior-s": "./image/Dior-s.jpg",
-  "DEAD": "./image/DEAD.png",
-  "ZZZZ": "./image/ZZZZ.png",
-  "GOGO": "./image/GOGO.png",
-  "FUCK": "./image/FUCK.png",
-  "CTRL": "./image/CTRL.png",
-  "HHHH": "./image/HHHH.png",
-  "SEXY": "./image/SEXY.png",
-  "OJBK": "./image/OJBK.png",
-  "JOKE-R": "./image/JOKE-R.jpg",
-  "POOR": "./image/POOR.png",
-  "OH-NO": "./image/OH-NO.png",
-  "MONK": "./image/MONK.png",
-  "SHIT": "./image/SHIT.png",
-  "THAN-K": "./image/THAN-K.png",
-  "MALO": "./image/MALO.png",
-  "ATM-er": "./image/ATM-er.png",
-  "THIN-K": "./image/THIN-K.png",
-  "SOLO": "./image/SOLO.png",
-  "LOVE-R": "./image/LOVE-R.png",
-  "WOC!": "./image/WOC.png",
-  "DRUNK": "./image/DRUNK.png",
-  "IMFW": "./image/IMFW.png"
+
+/**
+ * 人格海报：每类单独配置「仅形象」图路径 + 原画上的文案（多语言时翻译 banner 内字段）。
+ * 手裁图放在 image/poster/，文件名与 code 一致；替换文件即可，勿再使用统一比例脚本。
+ */
+export const typePosters = {
+  CTRL: {
+    image: './image/poster/CTRL.png',
+    banner: { leadIn: '你的人格类型是：', displayName: '拿捏者', codeLabel: 'CTRL' },
+  },
+  'ATM-er': {
+    image: './image/poster/ATM-er.png',
+    banner: { leadIn: '你的人格类型是：', displayName: '送钱者', codeLabel: 'ATM-er' },
+  },
+  'Dior-s': {
+    image: './image/poster/Dior-s.jpg',
+    banner: { leadIn: '你的人格类型是：', displayName: '屌丝', codeLabel: 'Dior-s' },
+  },
+  BOSS: {
+    image: './image/poster/BOSS.png',
+    banner: { leadIn: '你的人格类型是：', displayName: '领导者', codeLabel: 'BOSS' },
+  },
+  'THAN-K': {
+    image: './image/poster/THAN-K.png',
+    banner: { leadIn: '你的人格类型是：', displayName: '感恩者', codeLabel: 'THAN-K' },
+  },
+  'OH-NO': {
+    image: './image/poster/OH-NO.png',
+    banner: { leadIn: '你的人格类型是：', displayName: '哦不人', codeLabel: 'OH-NO' },
+  },
+  GOGO: {
+    image: './image/poster/GOGO.png',
+    banner: { leadIn: '你的人格类型是：', displayName: '行者', codeLabel: 'GOGO' },
+  },
+  SEXY: {
+    image: './image/poster/SEXY.png',
+    banner: { leadIn: '你的人格类型是：', displayName: '尤物', codeLabel: 'SEXY' },
+  },
+  'LOVE-R': {
+    image: './image/poster/LOVE-R.png',
+    banner: { leadIn: '你的人格类型是：', displayName: '多情者', codeLabel: 'LOVE-R' },
+  },
+  MUM: {
+    image: './image/poster/MUM.png',
+    banner: { leadIn: '你的人格类型是：', displayName: '妈妈', codeLabel: 'MUM' },
+  },
+  FAKE: {
+    image: './image/poster/FAKE.png',
+    banner: { leadIn: '你的人格类型是：', displayName: '伪人', codeLabel: 'FAKE' },
+  },
+  OJBK: {
+    image: './image/poster/OJBK.png',
+    banner: { leadIn: '你的人格类型是：', displayName: '无所谓人', codeLabel: 'OJBK' },
+  },
+  MALO: {
+    image: './image/poster/MALO.png',
+    banner: { leadIn: '你的人格类型是：', displayName: '吗喽', codeLabel: 'MALO' },
+  },
+  'JOKE-R': {
+    image: './image/poster/JOKE-R.jpg',
+    banner: { leadIn: '你的人格类型是：', displayName: '小丑', codeLabel: 'JOKE-R' },
+  },
+  'WOC!': {
+    image: './image/poster/WOC.png',
+    banner: { leadIn: '你的人格类型是：', displayName: '握草人', codeLabel: 'WOC!' },
+  },
+  'THIN-K': {
+    image: './image/poster/THIN-K.png',
+    banner: { leadIn: '你的人格类型是：', displayName: '思考者', codeLabel: 'THIN-K' },
+  },
+  /** 原画昵称「狗屎人」，与 typeLibrary 中文案区分 */
+  SHIT: {
+    image: './image/poster/SHIT.png',
+    banner: { leadIn: '你的人格类型是：', displayName: '狗屎人', codeLabel: 'SHIT' },
+  },
+  ZZZZ: {
+    image: './image/poster/ZZZZ.png',
+    banner: { leadIn: '你的人格类型是：', displayName: '装死者', codeLabel: 'ZZZZ' },
+  },
+  POOR: {
+    image: './image/poster/POOR.png',
+    banner: { leadIn: '你的人格类型是：', displayName: '贫困者', codeLabel: 'POOR' },
+  },
+  MONK: {
+    image: './image/poster/MONK.png',
+    banner: { leadIn: '你的人格类型是：', displayName: '僧人', codeLabel: 'MONK' },
+  },
+  IMSB: {
+    image: './image/poster/IMSB.png',
+    /** 原画文案与 typeLibrary.cn（傻者）不同，以原画为准便于对照裁图 */
+    banner: { leadIn: '你的性格类型是：', displayName: '自我攻击者', codeLabel: 'IMSB' },
+  },
+  SOLO: {
+    image: './image/poster/SOLO.png',
+    banner: { leadIn: '你的人格类型是：', displayName: '孤儿', codeLabel: 'SOLO' },
+  },
+  FUCK: {
+    image: './image/poster/FUCK.png',
+    banner: { leadIn: '你的人格类型是：', displayName: '草者', codeLabel: 'FUCK' },
+  },
+  DEAD: {
+    image: './image/poster/DEAD.png',
+    banner: { leadIn: '你的人格类型是：', displayName: '死者', codeLabel: 'DEAD' },
+  },
+  IMFW: {
+    image: './image/poster/IMFW.png',
+    banner: { leadIn: '你的人格类型是：', displayName: '废物', codeLabel: 'IMFW' },
+  },
+  HHHH: {
+    image: './image/poster/HHHH.png',
+    banner: { leadIn: '你的人格类型是：', displayName: '傻乐者', codeLabel: 'HHHH' },
+  },
+  DRUNK: {
+    image: './image/poster/DRUNK.png',
+    banner: { leadIn: '你的人格类型是：', displayName: '酒鬼', codeLabel: 'DRUNK' },
+  },
 };
 
 export const normalTypes = [
@@ -782,7 +872,7 @@ export default {
   questions,
   specialQuestions,
   typeLibrary,
-  typeImages,
+  typePosters,
   normalTypes,
   dimExplanations,
   dimensionOrder,

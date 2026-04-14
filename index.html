@@ -181,6 +181,23 @@
       color: var(--muted);
       text-align: center;
     }
+    .intro-gallery-row {
+      margin-top: 14px;
+      text-align: center;
+    }
+    .intro-gallery-link {
+      display: inline-block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--accent-strong);
+      text-decoration: none;
+      padding: 6px 4px;
+      border-radius: 8px;
+    }
+    .intro-gallery-link:hover {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
     .author-note {
       margin-top: 1.5rem;
       font-size: 0.9rem;
@@ -407,13 +424,42 @@
       background: linear-gradient(180deg, #ffffff, #f7fbf8);
       overflow: hidden;
     }
-    .poster-box.no-image .poster-image { display: none; }
+    .poster-type-banner {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .poster-type-lead {
+      font-size: 14px;
+      color: #5a6b62;
+      margin-bottom: 6px;
+      line-height: 1.35;
+    }
+    .poster-type-name {
+      font-size: clamp(1.1rem, 4vw, 1.45rem);
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    .poster-type-code {
+      font-size: clamp(1.2rem, 4.2vw, 1.6rem);
+      font-weight: 800;
+      color: var(--accent-strong);
+      letter-spacing: 0.02em;
+      margin-top: 4px;
+    }
+    .poster-figure {
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.85);
+    }
+    .poster-box.no-image .poster-figure { display: none; }
     .poster-image {
       width: 100%;
       max-height: 320px;
       object-fit: contain;
       border-radius: 12px;
-      background: rgba(255, 255, 255, 0.8);
+      background: transparent;
+      display: block;
     }
     .poster-caption {
       margin-top: 12px;
@@ -556,12 +602,22 @@
           <button type="button" id="continueResumeBtn" class="btn-primary" hidden>继续测试</button>
           <button type="button" id="startBtn" class="btn-secondary">开始测试</button>
         </div>
+        <p class="intro-gallery-row">
+          <a class="intro-gallery-link" href="./cards.html">人格图鉴 · 浏览全部类型</a>
+        </p>
         <details class="intro-history" id="introHistory" hidden>
           <summary id="introHistorySummary">历次结果</summary>
           <div id="introLatestWrap" class="intro-latest-wrap" hidden>
             <div class="result-top">
               <div class="poster-box" id="introLatestPosterBox">
-                <img id="introLatestPosterImg" class="poster-image" alt="" />
+                <div class="poster-type-banner">
+                  <div class="poster-type-lead" id="introPosterTypeLead"></div>
+                  <div class="poster-type-name" id="introPosterDisplayName"></div>
+                  <div class="poster-type-code" id="introPosterCodeLabel"></div>
+                </div>
+                <div class="poster-figure">
+                  <img id="introLatestPosterImg" class="poster-image" alt="" />
+                </div>
                 <div id="introLatestPosterCaption" class="poster-caption"></div>
               </div>
               <div class="type-box">
@@ -606,7 +662,14 @@
       <div class="result-wrap card">
         <div class="result-top">
           <div class="poster-box" id="posterBox">
-            <img id="posterImage" class="poster-image" alt="" />
+            <div class="poster-type-banner">
+              <div class="poster-type-lead" id="posterTypeLead"></div>
+              <div class="poster-type-name" id="posterTypeDisplayName"></div>
+              <div class="poster-type-code" id="posterTypeCodeLabel"></div>
+            </div>
+            <div class="poster-figure">
+              <img id="posterImage" class="poster-image" alt="" />
+            </div>
             <div id="posterCaption" class="poster-caption"></div>
           </div>
           <div class="type-box">
