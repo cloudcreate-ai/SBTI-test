@@ -568,118 +568,119 @@ export const typeLibrary = {
 
 /**
  * 人格海报：每类单独配置「仅形象」图路径 + 原画上的文案（多语言时翻译 banner 内字段）。
- * 手裁图放在 image/poster/，文件名与 code 一致；替换文件即可，勿再使用统一比例脚本。
+ * 手裁图放在 image/poster/，文件名与 code 一致。
+ * 画布统一为 1040×640（约 1.625:1），文件格式统一为 WebP；新图请居中置入该尺寸白底。
  */
 export const typePosters = {
   CTRL: {
-    image: './image/poster/CTRL.png',
+    image: './image/poster/CTRL.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '拿捏者', codeLabel: 'CTRL' },
   },
   'ATM-er': {
-    image: './image/poster/ATM-er.png',
+    image: './image/poster/ATM-er.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '送钱者', codeLabel: 'ATM-er' },
   },
   'Dior-s': {
-    image: './image/poster/Dior-s.jpg',
+    image: './image/poster/Dior-s.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '屌丝', codeLabel: 'Dior-s' },
   },
   BOSS: {
-    image: './image/poster/BOSS.png',
+    image: './image/poster/BOSS.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '领导者', codeLabel: 'BOSS' },
   },
   'THAN-K': {
-    image: './image/poster/THAN-K.png',
+    image: './image/poster/THAN-K.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '感恩者', codeLabel: 'THAN-K' },
   },
   'OH-NO': {
-    image: './image/poster/OH-NO.png',
+    image: './image/poster/OH-NO.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '哦不人', codeLabel: 'OH-NO' },
   },
   GOGO: {
-    image: './image/poster/GOGO.png',
+    image: './image/poster/GOGO.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '行者', codeLabel: 'GOGO' },
   },
   SEXY: {
-    image: './image/poster/SEXY.png',
+    image: './image/poster/SEXY.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '尤物', codeLabel: 'SEXY' },
   },
   'LOVE-R': {
-    image: './image/poster/LOVE-R.png',
+    image: './image/poster/LOVE-R.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '多情者', codeLabel: 'LOVE-R' },
   },
   MUM: {
-    image: './image/poster/MUM.png',
+    image: './image/poster/MUM.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '妈妈', codeLabel: 'MUM' },
   },
   FAKE: {
-    image: './image/poster/FAKE.png',
+    image: './image/poster/FAKE.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '伪人', codeLabel: 'FAKE' },
   },
   OJBK: {
-    image: './image/poster/OJBK.png',
+    image: './image/poster/OJBK.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '无所谓人', codeLabel: 'OJBK' },
   },
   MALO: {
-    image: './image/poster/MALO.png',
+    image: './image/poster/MALO.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '吗喽', codeLabel: 'MALO' },
   },
   'JOKE-R': {
-    image: './image/poster/JOKE-R.jpg',
+    image: './image/poster/JOKE-R.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '小丑', codeLabel: 'JOKE-R' },
   },
   'WOC!': {
-    image: './image/poster/WOC.png',
+    image: './image/poster/WOC.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '握草人', codeLabel: 'WOC!' },
   },
   'THIN-K': {
-    image: './image/poster/THIN-K.png',
+    image: './image/poster/THIN-K.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '思考者', codeLabel: 'THIN-K' },
   },
   /** 原画昵称「狗屎人」，与 typeLibrary 中文案区分 */
   SHIT: {
-    image: './image/poster/SHIT.png',
+    image: './image/poster/SHIT.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '狗屎人', codeLabel: 'SHIT' },
   },
   ZZZZ: {
-    image: './image/poster/ZZZZ.png',
+    image: './image/poster/ZZZZ.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '装死者', codeLabel: 'ZZZZ' },
   },
   POOR: {
-    image: './image/poster/POOR.png',
+    image: './image/poster/POOR.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '贫困者', codeLabel: 'POOR' },
   },
   MONK: {
-    image: './image/poster/MONK.png',
+    image: './image/poster/MONK.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '僧人', codeLabel: 'MONK' },
   },
   IMSB: {
-    image: './image/poster/IMSB.png',
+    image: './image/poster/IMSB.webp',
     /** 原画文案与 typeLibrary.cn（傻者）不同，以原画为准便于对照裁图 */
     banner: { leadIn: '你的性格类型是：', displayName: '自我攻击者', codeLabel: 'IMSB' },
   },
   SOLO: {
-    image: './image/poster/SOLO.png',
+    image: './image/poster/SOLO.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '孤儿', codeLabel: 'SOLO' },
   },
   FUCK: {
-    image: './image/poster/FUCK.png',
+    image: './image/poster/FUCK.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '草者', codeLabel: 'FUCK' },
   },
   DEAD: {
-    image: './image/poster/DEAD.png',
+    image: './image/poster/DEAD.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '死者', codeLabel: 'DEAD' },
   },
   IMFW: {
-    image: './image/poster/IMFW.png',
+    image: './image/poster/IMFW.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '废物', codeLabel: 'IMFW' },
   },
   HHHH: {
-    image: './image/poster/HHHH.png',
+    image: './image/poster/HHHH.webp',
     banner: { leadIn: '你的人格类型是：', displayName: '傻乐者', codeLabel: 'HHHH' },
   },
   DRUNK: {
-    image: './image/poster/DRUNK.png',
-    banner: { leadIn: '你的人格类型是：', displayName: '酒鬼', codeLabel: 'DRUNK' },
+    image: './image/poster/DRUNK.webp',
+    banner: { leadIn: '你的人格类型是：', displayName: '酒鬼', codeLabel: 'DRUN-K' },
   },
 };
 

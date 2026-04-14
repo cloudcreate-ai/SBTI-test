@@ -50,7 +50,7 @@ function openDetail(code, opts = {}) {
   dialogCodeEl.textContent = b.codeLabel;
   if (lib.cn !== b.displayName) {
     dialogCnNoteEl.hidden = false;
-    dialogCnNoteEl.textContent = `题库名称：${lib.cn}`;
+    dialogCnNoteEl.textContent = `又名：${lib.cn}`;
   } else {
     dialogCnNoteEl.hidden = true;
     dialogCnNoteEl.textContent = '';
