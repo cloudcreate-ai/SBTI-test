@@ -241,8 +241,11 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
+      --option-selected-bg: #e8f1ea;
+      /* --option-fill-ms 由内联样式与 JS 中 ADVANCE_DELAY_MS 同步 */
     }
     .option {
+      position: relative;
       display: flex;
       align-items: flex-start;
       gap: 12px;
@@ -251,10 +254,61 @@
       border-radius: 14px;
       border: 1px solid var(--line);
       background: #fff;
+      cursor: pointer;
+      overflow: hidden;
+      transition: border-color 0.18s ease, background 0.18s ease;
     }
-    .option:has(input:checked) {
-      border-color: var(--accent);
-      background: linear-gradient(180deg, #fbfefb, #f3f8f4);
+    /* 选中且未在播放：整卡已是浅绿底 */
+    .option:has(input:checked):not(.option--progress) {
+      border-color: rgba(77, 106, 83, 0.22);
+      background: var(--option-selected-bg);
+    }
+    /* 播放进度中：底为白，浅绿由 fill 从左向右铺满 */
+    .option.option--progress:has(input:checked) {
+      border-color: var(--line);
+      background: #fff;
+    }
+    .option-fill {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      transform: scaleX(0);
+      transform-origin: left center;
+      border-radius: inherit;
+      background: var(--option-selected-bg);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .option--progress .option-fill {
+      animation: option-fill-wipe var(--option-fill-ms, 560ms) linear forwards;
+    }
+    @keyframes option-fill-wipe {
+      from {
+        transform: scaleX(0);
+      }
+      to {
+        transform: scaleX(1);
+      }
+    }
+    .option.option--progress:has(input:checked) .option-code {
+      color: #3d5a42;
+    }
+    .option.option--progress:has(input:checked) .option-text {
+      font-weight: 600;
+      color: var(--text);
+    }
+    .option:has(input:checked):not(.option--progress) .option-code {
+      color: #3d5a42;
+    }
+    .option:has(input:checked):not(.option--progress) .option-text {
+      font-weight: 600;
+      color: var(--text);
+    }
+    .option input,
+    .option .option-code,
+    .option .option-text {
+      position: relative;
+      z-index: 1;
     }
     .option input {
       margin-top: 3px;
@@ -265,9 +319,12 @@
     }
     .option-code {
       font-weight: 800;
-      color: var(--accent-strong);
       min-width: 1.25rem;
       flex-shrink: 0;
+    }
+    /* 未选中：字母不用深绿，避免与选中/进度形成第三种强调色 */
+    .option:not(:has(input:checked)) .option-code {
+      color: var(--muted);
     }
     .option-text {
       flex: 1;

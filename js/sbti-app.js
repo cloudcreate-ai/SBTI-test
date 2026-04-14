@@ -40,13 +40,58 @@ const els = {
   authorContent: document.getElementById('authorContent'),
 };
 
+/** 选题后延迟再前进，便于看清选中项（毫秒） */
+const ADVANCE_DELAY_MS = 560;
+
 const app = {
   shuffledQuestions: [],
   answers: {},
   stepIndex: 0,
+  /** @type {ReturnType<typeof setTimeout> | null} */
+  advanceTimer: null,
 };
 
+function clearAdvanceTimer() {
+  if (app.advanceTimer !== null) {
+    clearTimeout(app.advanceTimer);
+    app.advanceTimer = null;
+  }
+}
+
+/** 选中项上播放从左到右填满动画，时长与 ADVANCE_DELAY_MS 一致 */
+function playOptionFillProgress() {
+  const root = els.wizardHost.querySelector('.options');
+  if (!root) return;
+  root.querySelectorAll('.option').forEach((label) => {
+    label.classList.remove('option--progress');
+    const fill = label.querySelector('.option-fill');
+    if (fill) {
+      /* 勿留内联 animation:none，否则会盖过样式表里的 keyframes */
+      fill.style.removeProperty('animation');
+      fill.style.removeProperty('transform');
+    }
+  });
+  void root.offsetWidth;
+  const checked = root.querySelector('input[name="current"]:checked');
+  if (!checked) return;
+  const label = checked.closest('.option');
+  if (!label) return;
+  label.classList.add('option--progress');
+}
+
+/** 写入答案后延迟再调用 goForwardAfterAnswer（与进度条动画同步） */
+function scheduleGoForward(q) {
+  clearAdvanceTimer();
+  els.wizardHint.textContent = ui.wizard.hintAdvancing;
+  playOptionFillProgress();
+  app.advanceTimer = setTimeout(() => {
+    app.advanceTimer = null;
+    goForwardAfterAnswer(q);
+  }, ADVANCE_DELAY_MS);
+}
+
 function showScreen(name) {
+  if (name !== 'wizard') clearAdvanceTimer();
   Object.entries(screens).forEach(([key, el]) => {
     el.classList.toggle('active', key === name);
   });
@@ -137,6 +182,7 @@ function renderIntroMirror() {
 }
 
 function renderStep() {
+  clearAdvanceTimer();
   const visible = getVisible();
   const total = visible.length;
   const idx = Math.min(Math.max(app.stepIndex, 0), Math.max(total - 1, 0));
@@ -157,13 +203,14 @@ function renderStep() {
         <span class="badge">${ui.wizard.stepBadge(done, total)}</span>
       </div>
       <h2 class="question-title">${q.text}</h2>
-      <div class="options" role="radiogroup" aria-label="${ui.wizard.optionsAria}">
+      <div class="options" style="--option-fill-ms: ${ADVANCE_DELAY_MS}ms" role="radiogroup" aria-label="${ui.wizard.optionsAria}">
         ${q.options
           .map((opt, i) => {
             const code = ['A', 'B', 'C', 'D'][i] || String(i + 1);
             const checked = app.answers[q.id] === opt.value ? 'checked' : '';
             return `
             <label class="option">
+              <span class="option-fill" aria-hidden="true"></span>
               <input type="radio" name="current" value="${opt.value}" ${checked} />
               <span class="option-code">${code}</span>
               <span class="option-text">${opt.label}</span>
@@ -181,7 +228,7 @@ function renderStep() {
       if (q.id === config.drinkGateQuestionId && v !== config.drinkGateInsertValue) {
         delete app.answers[config.drunkTriggerQuestionId];
       }
-      goForwardAfterAnswer(q);
+      scheduleGoForward(q);
     });
     // 后退后重点同一选项时 change 不触发，用 click + 快照区分「改选」与「确认原选项」
     input.addEventListener('click', () => {
@@ -191,7 +238,7 @@ function renderStep() {
         if (!input.checked) return;
         if (hadBefore === undefined) return;
         if (hadBefore !== v) return;
-        goForwardAfterAnswer(q);
+        scheduleGoForward(q);
       });
     });
   });
@@ -206,6 +253,7 @@ function renderStep() {
 }
 
 function startTest() {
+  clearAdvanceTimer();
   app.answers = {};
   app.shuffledQuestions = buildShuffledQuestions(bundle.questions, bundle.specialQuestions);
   app.stepIndex = 0;

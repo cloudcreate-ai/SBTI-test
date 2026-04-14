@@ -28,6 +28,7 @@ export const ui = {
     backHome: '返回首页',
     prev: '上一题',
     hintNeedChoice: '选择后将自动进入下一题；可点「上一题」返回修改。',
+    hintAdvancing: '选项背景进度条走完后进入下一题…',
     /** @param {number} n @param {number} total */
     stepBadge(n, total) {
       return `第 ${n} / ${total} 题`;
