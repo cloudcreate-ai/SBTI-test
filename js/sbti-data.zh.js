@@ -14,7 +14,11 @@ export const ui = {
     title: "MBTI已经过时，SBTI来了。",
     start: '开始测试',
     retest: '重新测试',
-    viewLastResult: '查看结果',
+    resumeTest: '继续测试',
+    /** 首页最近一次结果按钮的 title（文案为人格名称） */
+    viewLatestResultTitle: '点击查看该次完整结果',
+    /** 历史列表每行右侧 */
+    historyRowView: '查看',
     historySummary: '历次结果（最多保留 3 条）',
     /** @param {string} dateShort @param {string} typeCn */
     historyItemLine(dateShort, typeCn) {

@@ -9,7 +9,13 @@ import {
   getVisibleQuestions,
   computeResult,
 } from './sbti-engine.js';
-import { loadHistory, saveHistoryEntry } from './sbti-storage.js';
+import {
+  loadHistory,
+  saveHistoryEntry,
+  saveProgress,
+  loadProgress,
+  clearProgress,
+} from './sbti-storage.js';
 
 /** @type {typeof zh} */
 const bundle = zh;
@@ -23,9 +29,10 @@ const screens = {
 
 const els = {
   startBtn: document.getElementById('startBtn'),
-  viewLastResultBtn: document.getElementById('viewLastResultBtn'),
+  continueResumeBtn: document.getElementById('continueResumeBtn'),
   introHistory: document.getElementById('introHistory'),
   introHistorySummary: document.getElementById('introHistorySummary'),
+  viewLatestHistoryBtn: document.getElementById('viewLatestHistoryBtn'),
   introHistoryList: document.getElementById('introHistoryList'),
   wizardBackHome: document.getElementById('wizardBackHome'),
   wizardProgressBar: document.getElementById('wizardProgressBar'),
@@ -108,6 +115,47 @@ function getVisible() {
   );
 }
 
+/** 根据 id 列表还原 shuffledQuestions（与 buildShuffledQuestions 结构一致） */
+function rebuildQuestionsFromOrder(ids) {
+  const byId = new Map();
+  for (const q of bundle.questions) byId.set(q.id, q);
+  for (const q of bundle.specialQuestions) byId.set(q.id, q);
+  const out = [];
+  for (const id of ids) {
+    const q = byId.get(id);
+    if (q) out.push(q);
+  }
+  return out;
+}
+
+/** @param {NonNullable<ReturnType<typeof loadProgress>>} data */
+function applyLoadedProgress(data) {
+  app.shuffledQuestions = rebuildQuestionsFromOrder(data.questionOrder);
+  if (app.shuffledQuestions.length < 5) return false;
+  app.answers = { ...data.answers };
+  const visible = getVisible();
+  if (!visible.length) return false;
+  let idx = visible.findIndex((q) => q.id === data.currentQuestionId);
+  if (idx < 0) idx = 0;
+  app.stepIndex = Math.min(idx, visible.length - 1);
+  return true;
+}
+
+/** 将当前向导状态写入 localStorage（有题序时） */
+function persistProgressFromApp() {
+  if (!app.shuffledQuestions.length) return;
+  const visible = getVisible();
+  if (!visible.length) return;
+  const idx = Math.min(Math.max(app.stepIndex, 0), visible.length - 1);
+  const q = visible[idx];
+  if (!q) return;
+  saveProgress({
+    questionOrder: app.shuffledQuestions.map((x) => x.id),
+    answers: { ...app.answers },
+    currentQuestionId: q.id,
+  });
+}
+
 /** 本题答案已确定后：前进到下一题或出结果（饮酒 gate 的答案需先写入 app.answers） */
 function goForwardAfterAnswer(q) {
   const v2 = getVisible();
@@ -139,34 +187,49 @@ function formatHistoryEntryLine(e) {
 
 function refreshIntroActions() {
   const hist = loadHistory();
-  if (hist.length === 0) {
-    els.viewLastResultBtn.hidden = true;
-    els.introHistory.hidden = true;
-    els.startBtn.textContent = ui.intro.start;
-    return;
+  const prog = loadProgress();
+
+  /* 主操作：有未完成进度时「继续测试」为主按钮（靠前且 primary） */
+  if (prog) {
+    els.continueResumeBtn.hidden = false;
+    els.continueResumeBtn.textContent = ui.intro.resumeTest;
+    els.continueResumeBtn.className = 'btn-primary';
+    els.startBtn.className = 'btn-secondary';
+  } else {
+    els.continueResumeBtn.hidden = true;
+    els.startBtn.className = 'btn-primary';
   }
-  els.viewLastResultBtn.hidden = false;
-  els.introHistory.hidden = false;
-  els.viewLastResultBtn.textContent = ui.intro.viewLastResult;
-  els.introHistorySummary.textContent = ui.intro.historySummary;
-  els.startBtn.textContent = ui.intro.retest;
+  els.startBtn.textContent = hist.length > 0 ? ui.intro.retest : ui.intro.start;
 
-  els.introHistoryList.innerHTML = hist
-    .map(
-      (e, i) =>
-        `<li><button type="button" class="history-item-btn" data-history-index="${i}">${formatHistoryEntryLine(e)}</button></li>`,
-    )
-    .join('');
-
-  els.introHistoryList.querySelectorAll('[data-history-index]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const i = Number(btn.getAttribute('data-history-index'));
-      const h = loadHistory();
-      if (!h[i]) return;
-      app.answers = { ...h[i].answers };
-      renderResult({ persist: false });
+  if (hist.length === 0) {
+    els.introHistory.hidden = true;
+    els.viewLatestHistoryBtn.hidden = true;
+  } else {
+    els.introHistory.hidden = false;
+    els.introHistory.open = true;
+    els.introHistorySummary.textContent = ui.intro.historySummary;
+    els.viewLatestHistoryBtn.hidden = false;
+    const latest = hist[0];
+    els.viewLatestHistoryBtn.textContent = latest.typeCn || latest.typeCode || '—';
+    els.viewLatestHistoryBtn.title = ui.intro.viewLatestResultTitle;
+    els.introHistoryList.innerHTML = hist
+      .map(
+        (e, i) =>
+          `<li class="history-item-row"><span class="history-item-meta">${formatHistoryEntryLine(
+            e,
+          )}</span><button type="button" class="history-item-view-btn" data-history-index="${i}">${ui.intro.historyRowView}</button></li>`,
+      )
+      .join('');
+    els.introHistoryList.querySelectorAll('.history-item-view-btn[data-history-index]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const i = Number(btn.getAttribute('data-history-index'));
+        const h = loadHistory();
+        if (!h[i]) return;
+        app.answers = { ...h[i].answers };
+        renderResult({ persist: false });
+      });
     });
-  });
+  }
 }
 
 function renderIntroMirror() {
@@ -250,10 +313,27 @@ function renderStep() {
       renderStep();
     }
   };
+
+  persistProgressFromApp();
 }
 
-function startTest() {
+/**
+ * @param {boolean} [resume] 为 true 时从 localStorage 恢复未完成进度
+ */
+function startTest(resume = false) {
   clearAdvanceTimer();
+  if (resume) {
+    const data = loadProgress();
+    if (!data || !applyLoadedProgress(data)) {
+      clearProgress();
+      startTest(false);
+      return;
+    }
+    renderStep();
+    showScreen('wizard');
+    return;
+  }
+  clearProgress();
   app.answers = {};
   app.shuffledQuestions = buildShuffledQuestions(bundle.questions, bundle.specialQuestions);
   app.stepIndex = 0;
@@ -289,6 +369,7 @@ function renderResult(options = {}) {
 
   if (persist) {
     saveHistoryEntry(app.answers, { typeCode: type.code, typeCn: type.cn });
+    clearProgress();
   }
 
   document.getElementById('resultModeKicker').textContent = result.modeKicker;
@@ -335,24 +416,34 @@ function applyStaticLabels() {
 }
 
 function goIntro() {
+  persistProgressFromApp();
   showScreen('intro');
   refreshIntroActions();
 }
 
-els.startBtn.addEventListener('click', startTest);
-els.viewLastResultBtn.addEventListener('click', () => {
+els.startBtn.addEventListener('click', () => startTest(false));
+els.continueResumeBtn.addEventListener('click', () => startTest(true));
+els.viewLatestHistoryBtn.addEventListener('click', () => {
   const hist = loadHistory();
   if (!hist.length) return;
   app.answers = { ...hist[0].answers };
   renderResult({ persist: false });
 });
 els.wizardBackHome.addEventListener('click', goIntro);
-els.restartBtn.addEventListener('click', startTest);
+els.restartBtn.addEventListener('click', () => startTest(false));
 els.toTopBtn.addEventListener('click', goIntro);
 
 applyStaticLabels();
 renderIntroMirror();
 refreshIntroActions();
+
+window.addEventListener('pagehide', () => {
+  try {
+    persistProgressFromApp();
+  } catch {
+    /* ignore */
+  }
+});
 
 /**供 index内联脚本检测模块是否已加载 */
 window.__sbtiAppLoaded = true;

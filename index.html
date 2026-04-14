@@ -71,36 +71,78 @@
       max-width: 100%;
     }
     .intro-history {
-      margin-top: 14px;
+      margin-top: 16px;
       text-align: left;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 0 12px 12px;
+      background: linear-gradient(180deg, #fbfffb, #f5faf6);
     }
     .intro-history summary {
       cursor: pointer;
-      font-size: 0.8rem;
-      color: var(--muted);
       list-style: none;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--accent-strong);
+      padding: 14px 4px 12px;
     }
     .intro-history summary::-webkit-details-marker { display: none; }
+    /* 历史区内「查看最近一次」：可点但不抢主按钮风头 */
+    /* 最近一次：按钮文案为人格名称 */
+    .intro-history-view-btn {
+      width: 100%;
+      margin-bottom: 12px;
+      background: var(--panel);
+      color: var(--accent-strong);
+      border: 1px solid var(--line);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      min-height: 44px;
+      box-shadow: none;
+      text-align: center;
+    }
+    .intro-history-view-btn:hover {
+      border-color: #c5d8c9;
+      background: #fafcfb;
+    }
     .intro-history-list {
-      margin: 10px 0 0;
+      margin: 0;
       padding: 0;
       list-style: none;
     }
     .intro-history-list li { margin-top: 8px; }
-    .history-item-btn {
-      width: 100%;
-      text-align: left;
+    .history-item-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       padding: 10px 12px;
       border-radius: 12px;
       border: 1px solid var(--line);
       background: var(--soft);
-      font: inherit;
+    }
+    .history-item-meta {
+      flex: 1;
+      min-width: 0;
       font-size: 0.85rem;
       color: var(--text);
-      cursor: pointer;
+      line-height: 1.35;
+    }
+    .history-item-view-btn {
+      flex-shrink: 0;
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--accent-strong);
+      font: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      min-height: 36px;
       touch-action: manipulation;
     }
-    .history-item-btn:active {
+    .history-item-view-btn:active {
       opacity: 0.92;
     }
     .author-note {
@@ -499,11 +541,14 @@
       <div class="hero card">
         <h1 id="introTitle">SBTI</h1>
         <div class="intro-actions-row" id="introActionsRow">
-          <button type="button" id="viewLastResultBtn" class="btn-secondary" hidden>查看结果</button>
-          <button type="button" id="startBtn" class="btn-primary">开始测试</button>
+          <button type="button" id="continueResumeBtn" class="btn-primary" hidden>继续测试</button>
+          <button type="button" id="startBtn" class="btn-secondary">开始测试</button>
         </div>
         <details class="intro-history" id="introHistory" hidden>
           <summary id="introHistorySummary">历次结果</summary>
+          <button type="button" id="viewLatestHistoryBtn" class="intro-history-view-btn" hidden title="">
+            —
+          </button>
           <ul id="introHistoryList" class="intro-history-list"></ul>
         </details>
         <div class="author-note">
