@@ -95,7 +95,7 @@ function tryDecodeURIComponent(frag) {
 }
 
 /**
- * 与图鉴一致：`#persona_code`；`#card-…` 表示 card- 后为 persona 或牌面 card_id（如 B-H-A）
+ * 与 wiki（SBTI 人格图鉴）一致：`#persona_code`；`#card-…` 表示 card- 后为 persona 或牌面 card_id（如 B-H-A）
  * @param {string} raw
  */
 function hashFragmentToPersonaOrId(raw) {
@@ -196,7 +196,7 @@ function createCardEl(card) {
         <div class="back-title">${card.persona_name} · ${roleCn}</div>
         <p class="back-flavor">${card.flavor}</p>
         <p class="back-skill">${card.skill}</p>
-        <a class="card-gallery-link" href="./cards.html#${galleryHash}">在人格图鉴中查看</a>
+        <a class="card-gallery-link" href="./wiki.html#${galleryHash}">在 SBTI 人格图鉴中查看</a>
       </div>
     </div>
   `;

@@ -1,5 +1,5 @@
 /**
- * 人格图鉴页：从语言包读取 typeLibrary + typePosters，渲染卡片与详情弹层。
+ * SBTI 人格图鉴（wiki.html）：从语言包读取 typeLibrary + typePosters，渲染卡片与详情弹层。
  */
 import zh from './sbti-data.zh.js';
 
@@ -132,7 +132,7 @@ function openDetail(code, opts = {}) {
   dialogIntroEl.textContent = lib.intro;
   dialogDescEl.textContent = lib.desc;
   if (dialogPokerLinkEl) {
-    dialogPokerLinkEl.href = `./poker.html#${encodeURIComponent(code)}`;
+    dialogPokerLinkEl.href = `./sbpki.html#${encodeURIComponent(code)}`;
   }
   dialogEl.dataset.code = code;
   if (typeof dialogEl.showModal === 'function') {
