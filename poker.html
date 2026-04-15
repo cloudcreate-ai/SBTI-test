@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>SBTI 人格扑克牌</title>
+  <style>
+    :root {
+      --bg: #f6faf6;
+      --panel: #ffffff;
+      --text: #1e2a22;
+      --muted: #6a786f;
+      --line: #dbe8dd;
+      --soft: #edf6ef;
+      --accent: #4d6a53;
+      --shadow: 0 12px 32px rgba(47, 73, 55, 0.08);
+      --safe-b: env(safe-area-inset-bottom, 0px);
+      --safe-t: env(safe-area-inset-top, 0px);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: radial-gradient(circle at top left, #f8fff8 0, #f6faf6 40%, #f2f7f3 100%);
+      color: var(--text);
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding-top: var(--safe-t);
+    }
+    .shell {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 16px 14px calc(24px + var(--safe-b));
+    }
+    .page-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .page-head h1 {
+      margin: 0;
+      font-size: clamp(1.3rem, 4.2vw, 1.8rem);
+      line-height: 1.25;
+    }
+    .page-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--accent);
+      background: var(--panel);
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+    .page-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .card-gallery-link {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .card-gallery-link:hover {
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .poker-card--focus {
+      position: relative;
+      z-index: 2;
+    }
+    .poker-card--focus .card-inner {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+      border-radius: 16px;
+    }
+    .toolbar {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: minmax(220px, 1fr) 140px 140px auto;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .toolbar input, .toolbar select {
+      width: 100%;
+      height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0 12px;
+      font: inherit;
+      background: var(--panel);
+    }
+    .count {
+      justify-self: end;
+      font-size: 0.84rem;
+      color: var(--muted);
+    }
+    .poker-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .poker-card {
+      border: none;
+      padding: 0;
+      margin: 0;
+      background: transparent;
+      cursor: pointer;
+      perspective: 1000px;
+      text-align: left;
+      font: inherit;
+      color: inherit;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .card-inner {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 63 / 88;
+      transform-style: preserve-3d;
+      transition: transform .35s ease;
+    }
+    .poker-card.is-flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+    .card-face {
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      border: 0.8px solid #d6dfd8;
+      background: var(--panel);
+      backface-visibility: hidden;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+    .card-front {
+      padding: 10px 10px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .card-back {
+      transform: rotateY(180deg);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: linear-gradient(180deg, #fff, #f3f7f4);
+    }
+    .card-corner {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-weight: 800;
+      line-height: 1;
+      width: 34px;
+      z-index: 2;
+    }
+    .card-corner.top { top: 6px; left: 5px; }
+    .card-corner.bottom { bottom: 6px; right: 5px; transform: rotate(180deg); }
+    .rank { font-size: 1.06rem; letter-spacing: -0.02em; }
+    .suit { font-size: 1.14rem; margin-top: 1px; }
+    .is-joker .card-corner {
+      width: 34px;
+      align-items: center;
+    }
+    .is-joker .card-corner.top {
+      top: 5px;
+      left: 4px;
+    }
+    .is-joker .card-corner.bottom {
+      bottom: 5px;
+      right: 4px;
+      transform: rotate(180deg);
+    }
+    .is-joker .card-corner .rank {
+      font-size: 0.68rem;
+      letter-spacing: 0.01em;
+      writing-mode: vertical-rl;
+      text-orientation: upright;
+      line-height: 1;
+    }
+    .is-joker .card-corner .suit {
+      display: none;
+    }
+    .is-red .rank, .is-red .suit { color: #b30000; }
+    .is-black .rank, .is-black .suit { color: #121212; }
+    .card-role {
+      position: absolute;
+      top: 7px;
+      right: 7px;
+      font-size: 0.62rem;
+      padding: 1px 0;
+      border: none;
+      background: transparent;
+      color: #8a978f;
+      letter-spacing: 0.06em;
+      z-index: 2;
+    }
+    .card-avatar {
+      margin-top: 34px;
+      height: 58%;
+      width: 100%;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .card-name {
+      margin-top: 8px;
+      font-weight: 800;
+      font-size: 0.98rem;
+      letter-spacing: -0.01em;
+      width: 100%;
+      text-align: center;
+    }
+    .card-code {
+      margin-top: 2px;
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 600;
+      width: 100%;
+      text-align: center;
+      letter-spacing: 0.04em;
+    }
+    .back-title {
+      font-weight: 800;
+      font-size: 0.86rem;
+      line-height: 1.35;
+    }
+    .back-flavor, .back-skill {
+      margin: 0;
+      font-size: 0.76rem;
+      line-height: 1.52;
+    }
+    .back-flavor { color: #44544b; }
+    .back-skill {
+      color: #20342a;
+      font-weight: 650;
+      padding-top: 6px;
+      border-top: 1px dashed #c8d9cc;
+    }
+    @media (min-width: 900px) {
+      .poker-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 760px) {
+      .toolbar {
+        grid-template-columns: 1fr 1fr;
+      }
+      .count { justify-self: start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="page-head">
+      <div>
+        <h1>SBTI 人格扑克牌</h1>
+        <p>54 张：红色为 Boss，黑色为同事；点击卡面可翻转查看黑话与技能。</p>
+      </div>
+      <div class="page-actions">
+        <a class="back-link" href="./cards.html">人格图鉴</a>
+        <a class="back-link" href="./index.html">← 返回首页</a>
+      </div>
+    </header>
+
+    <section class="toolbar" aria-label="筛选">
+      <input id="pokerSearch" type="search" placeholder="搜索：人格名 / code / 技能…" autocomplete="off" />
+      <select id="roleFilter">
+        <option value="">全部身份</option>
+        <option value="Boss">仅 Boss</option>
+        <option value="Coworker">仅同事</option>
+      </select>
+      <select id="suitFilter">
+        <option value="">全部花色</option>
+        <option value="Hearts">Hearts ♥</option>
+        <option value="Diamonds">Diamonds ♦</option>
+        <option value="Spades">Spades ♠</option>
+        <option value="Clubs">Clubs ♣</option>
+        <option value="Joker">Joker 🃏</option>
+      </select>
+      <div class="count">当前 <strong id="cardCount">0</strong> 张</div>
+    </section>
+
+    <section id="pokerGrid" class="poker-grid" aria-label="扑克牌列表"></section>
+  </div>
+
+  <script type="module" src="./js/sbti-poker.js"></script>
+</body>
+</html>

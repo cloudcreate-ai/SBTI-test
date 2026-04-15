@@ -17,6 +17,7 @@ const dialogCodeEl = document.getElementById('typeDialogCode');
 const dialogCnNoteEl = document.getElementById('typeDialogCnNote');
 const dialogIntroEl = document.getElementById('typeDialogIntro');
 const dialogDescEl = document.getElementById('typeDialogDesc');
+const dialogPokerLinkEl = document.getElementById('typeDialogPokerLink');
 
 /** @type {HTMLElement[]} */
 let cardEls = [];
@@ -24,6 +25,79 @@ let cardEls = [];
 /** @param {string} code */
 function safeHashCode(code) {
   return encodeURIComponent(code);
+}
+
+/**
+ * 将地址栏 # 片段解析为人格 code（支持 `#CTRL` 与 `#card-CTRL` / `#card-%E2%80%A6`）
+ * @param {string} raw
+ */
+function hashFragmentToCode(raw) {
+  if (!raw) return '';
+  let primary = raw;
+  try {
+    primary = decodeURIComponent(raw);
+  } catch {
+    primary = raw;
+  }
+  if (primary.startsWith('card-')) {
+    const rest = primary.slice(5);
+    try {
+      return decodeURIComponent(rest);
+    } catch {
+      return rest;
+    }
+  }
+  try {
+    return decodeURIComponent(raw);
+  } catch {
+    return raw;
+  }
+}
+
+/**
+ * @param {string} raw
+ * @returns {string}
+ */
+function resolveCodeFromHash(raw) {
+  const guess = hashFragmentToCode(raw);
+  if (getEntry(guess)) return guess;
+
+  const tryIds = [raw, primaryDecoded(raw)];
+  for (const id of tryIds) {
+    if (!id) continue;
+    const el = document.getElementById(id);
+    const code = el?.dataset?.code;
+    if (code && getEntry(code)) return code;
+  }
+
+  const lower = guess.toLowerCase();
+  const fromKeys = Object.keys(typePosters).find(
+    (k) => k.toLowerCase() === lower
+  );
+  return fromKeys || '';
+}
+
+/** @param {string} frag */
+function primaryDecoded(frag) {
+  try {
+    return decodeURIComponent(frag);
+  } catch {
+    return frag;
+  }
+}
+
+/** @param {string} code */
+function revealAndScrollCard(code) {
+  let el = document.getElementById(`card-${safeHashCode(code)}`);
+  if (el?.hidden) {
+    searchEl.value = '';
+    filterCards('');
+    el = document.getElementById(`card-${safeHashCode(code)}`);
+  }
+  if (!el) return;
+  el.classList.add('type-card--focus');
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  window.setTimeout(() => el.classList.remove('type-card--focus'), 2600);
 }
 
 /** @param {string} code */
@@ -57,6 +131,9 @@ function openDetail(code, opts = {}) {
   }
   dialogIntroEl.textContent = lib.intro;
   dialogDescEl.textContent = lib.desc;
+  if (dialogPokerLinkEl) {
+    dialogPokerLinkEl.href = `./poker.html#${encodeURIComponent(code)}`;
+  }
   dialogEl.dataset.code = code;
   if (typeof dialogEl.showModal === 'function') {
     dialogEl.showModal();
@@ -148,8 +225,11 @@ function applyRouteHash() {
     if (dialogEl.open) dialogEl.close();
     return;
   }
-  const code = decodeURIComponent(raw);
-  if (getEntry(code)) openDetail(code);
+  const code = resolveCodeFromHash(raw);
+  if (!getEntry(code)) return;
+
+  revealAndScrollCard(code);
+  openDetail(code);
 }
 
 buildGrid();

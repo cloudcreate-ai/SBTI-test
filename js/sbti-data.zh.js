@@ -34,8 +34,11 @@ export const ui = {
     historyItemLine(dateShort, typeCn) {
       return `${dateShort} · ${typeCn}`;
     },
-    authorLine: '原作者：B站@蛆肉儿串儿',
-    authorTitle: '作者出于某种原因改名了，为避免打扰到原作者，现已删除链接',
+    authorLine: '原作者：B站@Q肉儿串儿',
+    /** bilibili 活动页（与 README 一致） */
+    authorOriginalUrl: 'https://www.bilibili.com/blackboard/era/WijKT2bWuCJWPg8B.html',
+    authorOriginalLinkText: 'B站原版',
+    authorOriginalLinkTitle: '在 bilibili 打开原作者活动页',
   },
   wizard: {
     backHome: '返回首页',
@@ -79,7 +82,7 @@ export const ui = {
       '本测试仅供娱乐。隐藏人格和傻乐兜底都属于作者故意埋的损招，请勿把它当成医学、心理学、相学、命理学或灵异学依据。',
   },
   authorNotes: [
-    '本测试首发于b站up主蛆肉儿串儿（UID417038183），初衷是劝诫一位爱喝酒的朋友戒酒。',
+    '本测试首发于b站up主Q肉儿串儿（UID417038183），初衷是劝诫一位爱喝酒的朋友戒酒。',
     '由于作者的人格是SHIT愤世者，所以平等的攻击了各位，在此抱歉！！不过我是一个绝世大美女，你们一定会原谅我，有B站的朋友们也可以关注我。',
     '关于这个测试，我没法很好的平衡娱乐和专业性，因此对于一些人格的阐释较为模糊或完全不准（如屌丝可能并非真的屌丝），如有冒犯非常抱歉！！',
     '再鉴于时间精力有限，就随便搞了一个先这样玩玩，后续会慢慢完善修改的，总之好玩为主，还请不要用于盈利呀。',

@@ -185,6 +185,9 @@
       margin-top: 14px;
       text-align: center;
     }
+    .intro-gallery-row + .intro-gallery-row {
+      margin-top: 6px;
+    }
     .intro-gallery-link {
       display: inline-block;
       font-size: 0.9rem;
@@ -203,6 +206,16 @@
       font-size: 0.9rem;
       color: var(--muted);
       line-height: 1.6;
+    }
+    .intro-author-original-link {
+      margin-left: 0.25em;
+      color: var(--accent-strong);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .intro-author-original-link:hover {
+      text-decoration: underline;
+      text-underline-offset: 3px;
     }
 
     button {
@@ -605,6 +618,9 @@
         <p class="intro-gallery-row">
           <a class="intro-gallery-link" href="./cards.html">人格图鉴 · 浏览全部类型</a>
         </p>
+        <p class="intro-gallery-row">
+          <a class="intro-gallery-link" href="./poker.html">人格扑克牌 · 卡面展示</a>
+        </p>
         <details class="intro-history" id="introHistory" hidden>
           <summary id="introHistorySummary">历次结果</summary>
           <div id="introLatestWrap" class="intro-latest-wrap" hidden>
@@ -638,7 +654,7 @@
         </button>
         <p class="intro-privacy-note" id="introPrivacyNote"></p>
         <div class="author-note">
-          <span id="authorLine" title=""></span>
+          <span id="authorLine"></span><span class="author-note-sep" aria-hidden="true"> · </span><a id="authorOriginalLink" class="intro-author-original-link" href="#" target="_blank" rel="noopener noreferrer"></a>
         </div>
       </div>
     </section>

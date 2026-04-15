@@ -72,6 +72,24 @@
       background: #fafcfb;
       border-color: #c5d8c9;
     }
+    .page-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .type-dialog-poker-link {
+      display: inline-block;
+      margin-top: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent-strong);
+      text-decoration: none;
+    }
+    .type-dialog-poker-link:hover {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
     .toolbar {
       display: flex;
       flex-wrap: wrap;
@@ -131,6 +149,12 @@
     .type-card:focus-visible {
       outline: 2px solid var(--accent-strong);
       outline-offset: 2px;
+    }
+    /* hash 定位时短暂高亮目标卡片 */
+    .type-card.type-card--focus {
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 0 0 2px var(--accent-strong), var(--shadow);
     }
     .type-card-thumb {
       background: var(--soft);
@@ -280,7 +304,10 @@
         <h1>SBTI 人格图鉴</h1>
         <p>点击卡片查看简介与完整解读；可通过链接加 <code>#类型代码</code> 分享。</p>
       </div>
-      <a class="back-link" href="./index.html">← 返回测验</a>
+      <div class="page-actions">
+        <a class="back-link" href="./poker.html">人格扑克牌</a>
+        <a class="back-link" href="./index.html">← 返回测验</a>
+      </div>
     </header>
 
     <div class="toolbar">
@@ -312,6 +339,7 @@
         </div>
         <p id="typeDialogIntro" class="type-dialog-intro"></p>
         <p id="typeDialogDesc" class="type-dialog-desc"></p>
+        <a id="typeDialogPokerLink" class="type-dialog-poker-link" href="#">在扑克牌中查看</a>
       </div>
     </div>
   </dialog>

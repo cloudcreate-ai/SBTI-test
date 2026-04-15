@@ -489,7 +489,12 @@ function applyStaticLabels() {
   document.getElementById('introTitle').textContent = ui.intro.title;
   const al = document.getElementById('authorLine');
   al.textContent = ui.intro.authorLine;
-  al.title = ui.intro.authorTitle;
+  const authorOrig = document.getElementById('authorOriginalLink');
+  if (authorOrig && ui.intro.authorOriginalUrl) {
+    authorOrig.href = ui.intro.authorOriginalUrl;
+    authorOrig.textContent = ui.intro.authorOriginalLinkText || '';
+    authorOrig.title = ui.intro.authorOriginalLinkTitle || '';
+  }
   const privacy = document.getElementById('introPrivacyNote');
   if (privacy) privacy.textContent = ui.intro.localDataPrivacy;
   els.wizardBackHome.textContent = `← ${ui.wizard.backHome}`;
